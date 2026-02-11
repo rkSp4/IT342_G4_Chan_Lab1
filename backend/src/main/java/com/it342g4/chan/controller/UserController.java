@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.validation.Valid;
+import javax.validation.Valid;
 import com.it342g4.chan.service.UserService;
 import com.it342g4.chan.entity.UserEntity;
 
@@ -15,14 +15,13 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/users")
-@CrossOrigin(origins = "*")
+@RequestMapping("/api")
+@CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
     
     @Autowired
     private UserService userService;
-    
-    // Create a new user
+
     @PostMapping
     public ResponseEntity<?> createUser(@Valid @RequestBody UserEntity user) {
         try {
@@ -97,40 +96,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
         }
     }
-    
-    // Enable/disable user
-    @PatchMapping("/{id}/status")
-    public ResponseEntity<?> toggleUserStatus(@PathVariable Long id, @RequestParam boolean enabled) {
-        try {
-            UserEntity user = userService.toggleUserStatus(id, enabled);
-            return ResponseEntity.ok(user);
-        } catch (RuntimeException e) {
-            Map<String, String> error = new HashMap<>();
-            error.put("error", e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
-        }
-    }
-    
-    // Change user role
-    @PatchMapping("/{id}/role")
-    public ResponseEntity<?> changeUserRole(@PathVariable Long id, @RequestParam String role) {
-        try {
-            UserEntity user = userService.changeUserRole(id, role);
-            return ResponseEntity.ok(user);
-        } catch (RuntimeException e) {
-            Map<String, String> error = new HashMap<>();
-            error.put("error", e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
-        }
-    }
-    
-    // Search users by name
-    @GetMapping("/search")
-    public ResponseEntity<List<UserEntity>> searchUsers(@RequestParam String name) {
-        List<UserEntity> users = userService.searchUsersByName(name);
-        return ResponseEntity.ok(users);
-    }
-    
+
     // Health check endpoint
     @GetMapping("/health")
     public ResponseEntity<Map<String, String>> healthCheck() {
