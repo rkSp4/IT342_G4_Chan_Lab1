@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.it342g4.chan.entity.UserEntity;
 import com.it342g4.chan.repository.UserRepository;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -62,7 +61,7 @@ public class UserService {
     
     // Update user
     public UserEntity updateUser(Long id, UserEntity userDetails) {
-        UserEntity user = UserRepository.findById(id)
+        UserEntity user = userRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
         
         // Update fields if provided
@@ -118,4 +117,12 @@ public class UserService {
         return userRepository.count();
     }
     
+    // Change user role
+    public UserEntity changeUserRole(Long id, String role) {
+        UserEntity user = userRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+        user.setProfile(role);
+        return userRepository.save(user);
+    }
+
 }
