@@ -13,7 +13,13 @@ This is a full-stack user authentication system developed as a laboratory projec
 - **React Scripts** 5.0.1 - Configuration and scripts for Create React App
 
 ### Backend
-- **Java** - Backend server implementation
+- **Spring Boot** 2.7.18 - Java-based framework for building web applications
+- **Spring Data JPA** - Data persistence layer
+- **Spring Security** - Authentication and authorization
+- **Maven** - Dependency management and build tool
+- **H2 Database** - In-memory database for development
+- **MySQL** - Production database support
+- **Java** 11 - Backend server implementation
 - RESTful API architecture
 
 ### Mobile
@@ -23,27 +29,42 @@ This is a full-stack user authentication system developed as a laboratory projec
 
 - Node.js (v14 or higher)
 - npm or yarn
-- Java Development Kit (JDK 8 or higher)
+- Java Development Kit (JDK 11 or higher)
+- Maven (or use included Maven wrapper)
 - Git
 
 ## Steps to Run Backend
 
-1. Navigate to the project root directory:
+1. Navigate to the backend directory:
    ```bash
-   cd IT342_G4_Chan_Lab1
+   cd backend
    ```
 
-2. Compile the Java backend:
+2. Build the project using Maven:
    ```bash
-   javac src/Main.java
+   ./mvnw clean compile
+   # On Windows use: .\mvnw.cmd clean compile
    ```
 
-3. Run the backend server:
+3. Run the Spring Boot application:
    ```bash
-   java -cp src Main
+   ./mvnw spring-boot:run
+   # On Windows use: .\mvnw.cmd spring-boot:run
    ```
 
-The backend server should start on `http://localhost:8080`
+Alternatively, you can package and run the JAR file:
+   ```bash
+   ./mvnw clean package -DskipTests
+   java -jar target/chan-0.0.1-SNAPSHOT.jar
+   ```
+
+The backend server will start on `http://localhost:8080`
+
+### Database Configuration
+
+The application is configured to use H2 in-memory database for development. You can access the H2 console at `http://localhost:8080/h2-console` when the application is running.
+
+For production, update `application.properties` with your MySQL database configuration.
 
 ## Steps to Run Web App
 
@@ -79,85 +100,134 @@ The mobile application is currently in development. Check the `mobile/` director
 
 ## API Endpoints
 
-Base URL: `http://localhost:8080/api/auth`
+Base URL: `http://localhost:8080/api`
 
-### Authentication Endpoints
+### User Management Endpoints
 
-#### 1. Register User
-- **Endpoint:** `POST /api/auth/register`
-- **Description:** Register a new user account
+#### 1. Create User
+- **Endpoint:** `POST /api`
+- **Description:** Create a new user account
 - **Request Body:**
   ```json
   {
     "username": "string",
     "email": "string",
-    "password": "string"
+    "password": "string",
+    "profile": "string"
   }
   ```
-- **Response:** User registration confirmation
+- **Response:** Created user object with generated ID
 
-#### 2. Login User
-- **Endpoint:** `POST /api/auth/login`
-- **Description:** Authenticate user and receive access token
+#### 2. Get All Users
+- **Endpoint:** `GET /api`
+- **Description:** Retrieve all users
+- **Response:** List of all users
+
+#### 3. Get User by ID
+- **Endpoint:** `GET /api/{id}`
+- **Description:** Retrieve a specific user by their ID
+- **Path Parameters:** `id` - User ID
+- **Response:** User object
+
+#### 4. Get User by Username
+- **Endpoint:** `GET /api/username/{username}`
+- **Description:** Retrieve a user by their username
+- **Path Parameters:** `username` - Username to search for
+- **Response:** User object
+
+#### 5. Update User
+- **Endpoint:** `PUT /api/{id}`
+- **Description:** Update an existing user's information
+- **Path Parameters:** `id` - User ID
 - **Request Body:**
   ```json
   {
+    "username": "string",
     "email": "string",
-    "password": "string"
+    "password": "string",
+    "profile": "string"
   }
   ```
-- **Response:** Authentication token and user data
+- **Response:** Updated user object
 
-#### 3. Get User Profile
-- **Endpoint:** `GET /api/auth/profile`
-- **Description:** Retrieve current user's profile information
-- **Headers:** `Authorization: Bearer {token}`
-- **Response:** User profile data
+#### 6. Delete User
+- **Endpoint:** `DELETE /api/{id}`
+- **Description:** Delete a user account
+- **Path Parameters:** `id` - User ID
+- **Response:** Deletion confirmation message
 
-#### 4. Logout User
-- **Endpoint:** `POST /api/auth/logout`
-- **Description:** Logout user and invalidate session
-- **Headers:** `Authorization: Bearer {token}`
-- **Response:** Logout confirmation
-
-#### 5. Verify Token
-- **Endpoint:** `GET /api/auth/verify`
-- **Description:** Verify if the current authentication token is valid
-- **Headers:** `Authorization: Bearer {token}`
-- **Response:** Token validation status
+#### 7. Health Check
+- **Endpoint:** `GET /api/health`
+- **Description:** Check if the API is running
+- **Response:** Server status and timestamp
 
 ## Features
 
+### Backend Features
+- User registration and management
+- User profile management with custom profiles
+- RESTful API with full CRUD operations
+- Data validation and error handling
+- Database integration with JPA/Hibernate
+- Health check endpoint
+- Cross-origin resource sharing (CORS) support
+
+### Frontend Features
+- React-based user interface
 - User registration with validation
-- Secure user login
-- JWT-based authentication
-- Protected routes requiring authentication
-- User profile management
-- Automatic token handling and refresh
-- Responsive user interface
-- Session management
+- Responsive design
+- API integration with Axios
+- Component-based architecture
+- Context-based state management
+
+## Known Issues
+
+### Backend Issues
+- **Database Connection Stability**: The database connection may experience intermittent issues and is not fully stabilized. This may cause occasional connection timeouts or data persistence problems.
+
+### Authentication System
+- **Login/Logout Functionality**: The user login and logout features are not yet finalized. The authentication flow is still under development and may not work as expected.
+- **Session Management**: User session handling and token management are incomplete.
+
+### General
+- These issues are currently being addressed and will be resolved in future updates.
 
 ## Project Structure
 
 ```
 IT342_G4_Chan_Lab1/
-├── src/                    # Backend Java source files
-│   └── Main.java
-├── web/                    # React frontend application
+├── backend/                    # Spring Boot backend application
+│   ├── src/
+│   │   ├── main/
+│   │   │   ├── java/com/it342g4/chan/
+│   │   │   │   ├── ChanApplication.java      # Main Spring Boot application
+│   │   │   │   ├── config/                   # Configuration classes
+│   │   │   │   ├── controller/               # REST controllers
+│   │   │   │   ├── dto/                      # Data Transfer Objects
+│   │   │   │   ├── entity/                   # JPA entities
+│   │   │   │   ├── repository/               # Data repositories
+│   │   │   │   └── service/                  # Business logic services
+│   │   │   └── resources/
+│   │   │       └── application.properties    # Application configuration
+│   │   └── test/                             # Unit tests
+│   ├── target/                 # Compiled classes and build artifacts
+│   ├── pom.xml                # Maven configuration
+│   └── mvnw, mvnw.cmd         # Maven wrapper scripts
+├── web/                       # React frontend application
 │   ├── public/
 │   ├── src/
-│   │   ├── components/    # React components
-│   │   ├── context/       # React context providers
-│   │   ├── services/      # API service layer
-│   │   └── utils/         # Utility functions
+│   │   ├── components/       # React components
+│   │   ├── context/          # React context providers
+│   │   ├── services/         # API service layer
+│   │   └── utils/            # Utility functions
 │   └── package.json
-├── mobile/                 # Mobile application (in development)
-└── docs/                   # Documentation files
+├── mobile/                    # Mobile application (in development)
+├── docs/                      # Documentation files
+└── README.md                  # This file
 ```
 
 ## Contributors
 
-- Group 4
 - Lance Chan
 
 ## License
